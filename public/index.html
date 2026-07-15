@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Remote Desk Hub</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main id="app">
+      <section class="login" id="loginView">
+        <form class="login-box" id="loginForm">
+          <h1>Remote Desk Hub</h1>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <button type="submit">Entra</button>
+          <p id="loginError" class="error" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="shell hidden" id="shellView">
+        <header class="topbar">
+          <div>
+            <strong>Remote Desk Hub</strong>
+            <span id="machineLabel"></span>
+          </div>
+          <button id="logoutButton" class="ghost">Esci</button>
+        </header>
+
+        <div class="layout">
+          <nav class="rail" aria-label="Sezioni">
+            <button class="nav active" data-view="files">File</button>
+            <button class="nav" data-view="apps">App</button>
+            <button class="nav" data-view="permissions">Permessi</button>
+          </nav>
+
+          <section class="workspace">
+            <div id="filesView" class="view">
+              <div class="toolbar">
+                <select id="rootSelect" aria-label="Root"></select>
+                <input id="pathInput" aria-label="Percorso" value=".">
+                <button id="goButton">Apri</button>
+                <button id="openFolderButton" class="ghost">Explorer</button>
+              </div>
+              <div class="split">
+                <section class="browser">
+                  <div class="actions">
+                    <input id="newNameInput" placeholder="nome file o cartella">
+                    <button id="newFileButton">File</button>
+                    <button id="newFolderButton">Cartella</button>
+                  </div>
+                  <div id="fileList" class="file-list"></div>
+                </section>
+                <section class="editor">
+                  <div class="editor-head">
+                    <span id="editorPath">Nessun file</span>
+                    <div>
+                      <button id="downloadButton" class="ghost" disabled>Download</button>
+                      <button id="saveButton" disabled>Salva</button>
+                    </div>
+                  </div>
+                  <textarea id="editorText" spellcheck="false" disabled></textarea>
+                </section>
+              </div>
+            </div>
+
+            <div id="appsView" class="view hidden">
+              <div class="section-head">
+                <h2>App consentite</h2>
+              </div>
+              <div id="appGrid" class="app-grid"></div>
+            </div>
+
+            <div id="permissionsView" class="view hidden">
+              <div class="section-head">
+                <h2>Permessi</h2>
+              </div>
+              <div class="permission-panel">
+                <p id="permissionNote"></p>
+                <div id="permissionActions" class="app-grid"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

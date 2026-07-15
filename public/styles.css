@@ -1,0 +1,390 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --text: #1c2430;
+  --muted: #5b6573;
+  --line: #d8dde5;
+  --brand: #1b6f77;
+  --brand-strong: #13545b;
+  --accent: #d57a2a;
+  --danger: #b42318;
+  --shadow: 0 8px 24px rgba(24, 32, 44, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background: var(--bg);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 6px;
+  padding: 0 14px;
+  color: white;
+  background: var(--brand);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--brand-strong);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.ghost {
+  color: var(--text);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.ghost:hover {
+  background: #eef1f5;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: white;
+}
+
+input,
+select {
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-box {
+  width: min(380px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.login-box h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  letter-spacing: 0;
+}
+
+.error {
+  min-height: 20px;
+  margin: 0;
+  color: var(--danger);
+}
+
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 56px 1fr;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.topbar span {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.layout {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 148px 1fr;
+}
+
+.rail {
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  background: #eef1f5;
+}
+
+.nav {
+  width: 100%;
+  margin-bottom: 8px;
+  color: var(--text);
+  background: transparent;
+  text-align: left;
+}
+
+.nav:hover,
+.nav.active {
+  color: white;
+  background: var(--brand);
+}
+
+.workspace {
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+}
+
+.view {
+  height: calc(100vh - 88px);
+  min-height: 0;
+}
+
+.toolbar,
+.actions,
+.editor-head,
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar {
+  margin-bottom: 14px;
+}
+
+#rootSelect {
+  width: 170px;
+}
+
+#pathInput {
+  flex: 1;
+  min-width: 120px;
+}
+
+.split {
+  height: calc(100% - 52px);
+  display: grid;
+  grid-template-columns: minmax(260px, 36%) 1fr;
+  gap: 14px;
+}
+
+.browser,
+.editor,
+.permission-panel {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.browser {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.actions {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.actions input {
+  min-width: 0;
+  flex: 1;
+}
+
+.file-list {
+  min-height: 0;
+  overflow: auto;
+}
+
+.file-row {
+  width: 100%;
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-bottom: 1px solid #edf0f4;
+  background: white;
+  color: var(--text);
+  text-align: left;
+}
+
+.file-row:hover {
+  background: #f3f7f8;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.editor {
+  display: grid;
+  grid-template-rows: 54px 1fr;
+  overflow: hidden;
+}
+
+.editor-head {
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+#editorPath {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#editorText {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 14px;
+  border: 0;
+  border-radius: 0;
+  resize: none;
+  line-height: 1.45;
+  font-family: "Cascadia Mono", Consolas, monospace;
+}
+
+.section-head {
+  height: 44px;
+  margin-bottom: 12px;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.app-tile {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.app-tile strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.permission-panel {
+  padding: 16px;
+}
+
+.permission-panel p {
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+.toast {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: white;
+  background: #24313f;
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 820px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    display: flex;
+    gap: 8px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nav {
+    width: auto;
+    margin: 0;
+  }
+
+  .view {
+    height: auto;
+    min-height: calc(100vh - 144px);
+  }
+
+  .toolbar,
+  .actions {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  #rootSelect,
+  #pathInput {
+    width: 100%;
+    flex: 1 0 100%;
+  }
+
+  .split {
+    height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .browser,
+  .editor {
+    height: 46vh;
+  }
+}
