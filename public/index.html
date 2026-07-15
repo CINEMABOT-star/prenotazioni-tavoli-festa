@@ -3,87 +3,123 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Remote Desk Hub</title>
+    <title>Prenotazioni tavoli festa</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <main id="app">
-      <section class="login" id="loginView">
-        <form class="login-box" id="loginForm">
-          <h1>Remote Desk Hub</h1>
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required>
-          <button type="submit">Entra</button>
-          <p id="loginError" class="error" role="alert"></p>
-        </form>
-      </section>
-
-      <section class="shell hidden" id="shellView">
-        <header class="topbar">
-          <div>
-            <strong>Remote Desk Hub</strong>
-            <span id="machineLabel"></span>
-          </div>
-          <button id="logoutButton" class="ghost">Esci</button>
-        </header>
-
-        <div class="layout">
-          <nav class="rail" aria-label="Sezioni">
-            <button class="nav active" data-view="files">File</button>
-            <button class="nav" data-view="apps">App</button>
-            <button class="nav" data-view="permissions">Permessi</button>
-          </nav>
-
-          <section class="workspace">
-            <div id="filesView" class="view">
-              <div class="toolbar">
-                <select id="rootSelect" aria-label="Root"></select>
-                <input id="pathInput" aria-label="Percorso" value=".">
-                <button id="goButton">Apri</button>
-                <button id="openFolderButton" class="ghost">Explorer</button>
-              </div>
-              <div class="split">
-                <section class="browser">
-                  <div class="actions">
-                    <input id="newNameInput" placeholder="nome file o cartella">
-                    <button id="newFileButton">File</button>
-                    <button id="newFolderButton">Cartella</button>
-                  </div>
-                  <div id="fileList" class="file-list"></div>
-                </section>
-                <section class="editor">
-                  <div class="editor-head">
-                    <span id="editorPath">Nessun file</span>
-                    <div>
-                      <button id="downloadButton" class="ghost" disabled>Download</button>
-                      <button id="saveButton" disabled>Salva</button>
-                    </div>
-                  </div>
-                  <textarea id="editorText" spellcheck="false" disabled></textarea>
-                </section>
-              </div>
-            </div>
-
-            <div id="appsView" class="view hidden">
-              <div class="section-head">
-                <h2>App consentite</h2>
-              </div>
-              <div id="appGrid" class="app-grid"></div>
-            </div>
-
-            <div id="permissionsView" class="view hidden">
-              <div class="section-head">
-                <h2>Permessi</h2>
-              </div>
-              <div class="permission-panel">
-                <p id="permissionNote"></p>
-                <div id="permissionActions" class="app-grid"></div>
-              </div>
-            </div>
-          </section>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <strong>Prenotazioni tavoli</strong>
+          <span id="summaryText">Caricamento...</span>
         </div>
+        <div class="top-actions">
+          <div class="search-box">
+            <input id="searchInput" type="search" placeholder="Cerca nome o tavolo" autocomplete="off">
+            <button id="clearSearchButton" class="ghost" type="button" aria-label="Pulisci ricerca">X</button>
+          </div>
+          <button id="newBookingButton" type="button">Nuova prenotazione</button>
+          <nav class="tabs" aria-label="Vista">
+            <button class="tab active" type="button" data-view="map">Mappa</button>
+            <button class="tab" type="button" data-view="list">Elenco</button>
+          </nav>
+        </div>
+      </header>
+
+      <section class="main-grid">
+        <section class="content">
+          <div id="mapView" class="view">
+            <div id="searchResults" class="search-results hidden"></div>
+            <div id="mapsContainer" class="maps-container" aria-label="Mappa tavoli"></div>
+          </div>
+
+          <div id="listView" class="view hidden">
+            <div class="list-head">
+              <h1>Elenco prenotazioni</h1>
+              <span id="listCount"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th><button class="sort-button" type="button" data-sort="tableNumber">Tavolo</button></th>
+                    <th><button class="sort-button" type="button" data-sort="name">Nome</button></th>
+                    <th><button class="sort-button" type="button" data-sort="people">Persone</button></th>
+                    <th>Telefono</th>
+                    <th>Interno/Esterno</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody id="reservationRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel" id="bookingPanel">
+          <div class="panel-empty" id="emptyPanel">
+            <h2>Seleziona un tavolo</h2>
+            <p>Clicca un tavolo libero per prenotare, oppure usa “Nuova prenotazione” per farti suggerire il posto migliore.</p>
+          </div>
+
+          <form class="booking-form hidden" id="bookingForm">
+            <div class="panel-title">
+              <div>
+                <h2 id="panelTitle">Prenotazione</h2>
+                <p id="selectedTableText"></p>
+              </div>
+              <button id="closePanelButton" class="ghost icon-button" type="button" aria-label="Chiudi">X</button>
+            </div>
+
+            <input id="reservationId" type="hidden">
+            <input id="selectedTableNumber" type="hidden">
+
+            <label>
+              Nome prenotazione
+              <input id="bookingName" required autocomplete="off">
+            </label>
+
+            <label>
+              Numero persone
+              <input id="bookingPeople" type="number" min="1" required>
+            </label>
+
+            <label>
+              Numero telefono
+              <input id="bookingPhone" autocomplete="off">
+            </label>
+
+            <label>
+              Note
+              <textarea id="bookingNotes" rows="3"></textarea>
+            </label>
+
+            <fieldset id="preferenceGroup">
+              <legend>Preferenza</legend>
+              <div class="segmented">
+                <label><input type="radio" name="preference" value="interno"> Interno</label>
+                <label><input type="radio" name="preference" value="esterno"> Esterno</label>
+                <label><input type="radio" name="preference" value="indifferente" checked> Indifferente</label>
+              </div>
+            </fieldset>
+
+            <div id="suggestBox" class="suggest-box hidden">
+              <button id="suggestButton" class="ghost" type="button">Suggerisci tavolo</button>
+              <p id="suggestText"></p>
+            </div>
+
+            <p class="warning hidden" id="formWarning" role="alert"></p>
+
+            <div class="panel-actions">
+              <button id="saveButton" type="submit">Salva</button>
+              <button id="editButton" type="submit" class="hidden">Modifica</button>
+              <button id="deleteButton" type="button" class="danger hidden">Elimina prenotazione</button>
+            </div>
+          </form>
+        </aside>
       </section>
     </main>
+
     <div id="toast" class="toast hidden" role="status"></div>
     <script src="/app.js"></script>
   </body>

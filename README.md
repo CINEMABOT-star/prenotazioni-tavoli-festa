@@ -1,23 +1,26 @@
-# Remote Desk Hub
+# Prenotazioni tavoli festa
 
-Pannello web locale per gestire file e aprire app consentite sul PC.
+Web app locale per assegnare i tavoli della festa dagli organizzatori.
 
 ## Avvio
 
 ```powershell
-node server.mjs
+npm.cmd install
+npm.cmd start
 ```
 
-Apri `http://127.0.0.1:8787` e usa la password stampata nel terminale.
-Se non imposti una password, viene creata in `data/admin-password.txt`.
+Apri `http://127.0.0.1:8787`.
 
-## Accesso da un altro dispositivo
+## File principali
 
-Usa una VPN privata o una rete affidabile. Per ascoltare anche sulla rete:
+- `tables.json`: numeri tavolo, capienza, interno/esterno e coordinate sulla piantina.
+- `data/reservations.sqlite`: database SQLite con le prenotazioni.
+- `public/assets/map-esterno.png` e `public/assets/map-interno.png`: immagini della piantina.
+
+Per usare un tablet nella stessa rete:
 
 ```powershell
-$env:HOST="0.0.0.0"; node server.mjs
+$env:HOST="0.0.0.0"; npm.cmd start
 ```
 
-Non esporre questa porta direttamente su Internet. Il pannello non esegue
-comandi arbitrari e non eleva privilegi di sistema.
+Poi apri dal tablet `http://IP_DEL_PC:8787`.
