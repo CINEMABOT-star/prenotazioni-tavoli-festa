@@ -36,3 +36,9 @@ Repository GitHub:
 ```text
 https://github.com/CINEMABOT-star/prenotazioni-tavoli-festa
 ```
+
+Deploy:
+
+```text
+https://render.com/deploy?repo=https://github.com/CINEMABOT-star/prenotazioni-tavoli-festa
+```
