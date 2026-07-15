@@ -27,6 +27,20 @@ Poi apri dal tablet `http://IP_DEL_PC:8787`.
 
 ## Pubblicazione online
 
+Ci sono due modalita' di pubblicazione.
+
+### GitHub Pages
+
+La cartella `docs/` contiene la versione statica per GitHub Pages:
+
+```text
+https://cinemabot-star.github.io/prenotazioni-tavoli-festa/
+```
+
+Su GitHub Pages le prenotazioni vengono salvate nel browser del dispositivo tramite `localStorage`. Restano presenti quando riapri il link dallo stesso browser, ma non sono condivise automaticamente tra dispositivi diversi.
+
+### Render con SQLite persistente
+
 Il progetto include `render.yaml` per pubblicare l'app come servizio Node.js su Render con disco persistente.
 
 Il database SQLite online viene salvato in `/var/data/reservations.sqlite`, cioe' nel disco persistente configurato nel blueprint. Senza disco persistente i dati verrebbero persi a ogni riavvio o nuovo deploy.
