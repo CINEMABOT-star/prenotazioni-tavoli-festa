@@ -4,10 +4,10 @@ import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 const PORT = Number(process.env.PORT || 8787);
-const HOST = process.env.HOST || "127.0.0.1";
+const HOST = process.env.HOST || "0.0.0.0";
 const ROOT = process.cwd();
 const PUBLIC_DIR = path.join(ROOT, "public");
-const DATA_DIR = path.join(ROOT, "data");
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const DB_FILE = path.join(DATA_DIR, "reservations.sqlite");
 const TABLES_FILE = path.join(ROOT, "tables.json");
 
@@ -133,6 +133,10 @@ app.use(express.static(PUBLIC_DIR, {
 
 app.get("/api/tables", (req, res) => {
   res.json({ maps: tablesConfig.maps, tables });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
 });
 
 app.get("/api/reservations", (req, res) => {
