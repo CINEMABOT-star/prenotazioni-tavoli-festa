@@ -37,7 +37,30 @@ La cartella `docs/` contiene la versione statica per GitHub Pages:
 https://cinemabot-star.github.io/prenotazioni-tavoli-festa/
 ```
 
-Su GitHub Pages le prenotazioni vengono salvate nel browser del dispositivo tramite `localStorage`. Restano presenti quando riapri il link dallo stesso browser, ma non sono condivise automaticamente tra dispositivi diversi.
+Senza database esterno, GitHub Pages salva le prenotazioni nel browser del dispositivo tramite `localStorage`. Restano presenti quando riapri il link dallo stesso browser, ma non sono condivise automaticamente tra dispositivi diversi.
+
+### GitHub Pages + Supabase Free
+
+Questa e' la soluzione consigliata per avere un link statico gratis e dati condivisi tra PC e telefono.
+
+1. Crea un progetto gratis su Supabase.
+2. Apri `SQL Editor`.
+3. Copia e avvia il contenuto di `supabase-schema.sql`.
+4. Vai in `Project Settings` -> `API`.
+5. Copia `Project URL` e `anon public key`.
+6. Incollali in `docs/config.js`:
+
+```js
+window.APP_CONFIG = {
+  apiBaseUrl: "",
+  supabaseUrl: "https://TUO-PROGETTO.supabase.co",
+  supabaseAnonKey: "TUA-ANON-PUBLIC-KEY"
+};
+```
+
+7. Fai commit e push.
+
+Quando Supabase e' configurato, nel sito compare `database condiviso` e tutti i dispositivi vedono le stesse prenotazioni.
 
 Se vuoi usare GitHub Pages come indirizzo principale ma con dati condivisi:
 

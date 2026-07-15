@@ -1,3 +1,5 @@
 window.APP_CONFIG = {
-  apiBaseUrl: ""
+  apiBaseUrl: "",
+  supabaseUrl: "",
+  supabaseAnonKey: ""
 };

@@ -11,6 +11,9 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 const API_BASE = String(window.APP_CONFIG?.apiBaseUrl || "").replace(/\/+$/, "");
+const SUPABASE_URL = String(window.APP_CONFIG?.supabaseUrl || "").replace(/\/+$/, "");
+const SUPABASE_ANON_KEY = String(window.APP_CONFIG?.supabaseAnonKey || "");
+const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 async function api(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -26,6 +29,14 @@ async function api(path, options = {}) {
 }
 
 async function loadInitialData() {
+  if (hasSupabase) {
+    const tablesData = await loadStaticTables();
+    state.tables = tablesData.tables;
+    const reservations = await loadSupabaseReservations();
+    state.storage = "supabase";
+    return { tablesData, reservations };
+  }
+
   try {
     const [tablesData, reservationsData] = await Promise.all([
       api("/api/tables"),
@@ -34,12 +45,16 @@ async function loadInitialData() {
     state.storage = "server";
     return { tablesData, reservations: reservationsData.reservations };
   } catch {
-    const tablesResponse = await fetch("tables.json", { cache: "no-store" });
-    if (!tablesResponse.ok) throw new Error("Configurazione tavoli non trovata");
-    const tablesData = await tablesResponse.json();
+    const tablesData = await loadStaticTables();
     state.storage = "local";
     return { tablesData, reservations: loadLocalReservations() };
   }
+}
+
+async function loadStaticTables() {
+  const tablesResponse = await fetch("tables.json", { cache: "no-store" });
+  if (!tablesResponse.ok) throw new Error("Configurazione tavoli non trovata");
+  return tablesResponse.json();
 }
 
 function loadLocalReservations() {
@@ -52,6 +67,81 @@ function loadLocalReservations() {
 
 function saveLocalReservations() {
   localStorage.setItem("tableReservations", JSON.stringify(state.reservations));
+}
+
+function supabaseHeaders(extra = {}) {
+  return {
+    apikey: SUPABASE_ANON_KEY,
+    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    "Content-Type": "application/json",
+    ...extra
+  };
+}
+
+async function supabaseRequest(path, options = {}) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: supabaseHeaders(options.headers || {})
+  });
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+  if (!response.ok) {
+    throw new Error(data?.message || "Errore Supabase");
+  }
+  return data;
+}
+
+function fromSupabaseReservation(row) {
+  const table = tableByNumber(row.table_number);
+  return {
+    id: row.id,
+    tableNumber: Number(row.table_number),
+    name: row.name,
+    people: Number(row.people),
+    phone: row.phone || "",
+    notes: row.notes || "",
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    table
+  };
+}
+
+function toSupabaseReservation(payload) {
+  return {
+    table_number: payload.tableNumber,
+    name: payload.name.trim(),
+    people: payload.people,
+    phone: payload.phone.trim(),
+    notes: payload.notes.trim()
+  };
+}
+
+async function loadSupabaseReservations() {
+  const rows = await supabaseRequest("reservations?select=*&order=table_number.asc");
+  return rows.map(fromSupabaseReservation);
+}
+
+async function saveSupabaseReservation(payload, id) {
+  const body = JSON.stringify(toSupabaseReservation(payload));
+  if (id) {
+    await supabaseRequest(`reservations?id=eq.${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=representation" },
+      body
+    });
+  } else {
+    await supabaseRequest("reservations", {
+      method: "POST",
+      headers: { Prefer: "return=representation" },
+      body
+    });
+  }
+}
+
+async function deleteSupabaseReservation(id) {
+  await supabaseRequest(`reservations?id=eq.${encodeURIComponent(id)}`, {
+    method: "DELETE"
+  });
 }
 
 function toast(message) {
@@ -103,7 +193,7 @@ function renderSummary() {
   const booked = state.reservations.length;
   const total = state.tables.length;
   const people = state.reservations.reduce((sum, reservation) => sum + reservation.people, 0);
-  const storageText = state.storage === "server" ? "database condiviso" : "salvato solo su questo dispositivo";
+  const storageText = state.storage === "local" ? "salvato solo su questo dispositivo" : "database condiviso";
   $("summaryText").textContent = `${booked}/${total} tavoli prenotati - ${people} persone - ${storageText}`;
   $("listCount").textContent = `${booked} prenotazioni`;
 }
@@ -307,7 +397,10 @@ async function saveForm(event) {
 
   try {
     const id = Number($("reservationId").value || 0);
-    if (state.storage === "local") {
+    if (state.storage === "supabase") {
+      await saveSupabaseReservation(payload, id);
+      toast(id ? "Prenotazione modificata" : "Prenotazione salvata");
+    } else if (state.storage === "local") {
       saveLocalReservation(payload, id);
       toast(id ? "Prenotazione modificata" : "Prenotazione salvata");
     } else if (id) {
@@ -329,15 +422,16 @@ async function deleteReservation() {
   const reservation = reservationById(id);
   if (!reservation) return;
   if (!confirm(`Eliminare la prenotazione di ${reservation.name} al tavolo ${reservation.tableNumber}?`)) return;
-  if (state.storage === "local") {
+  if (state.storage === "supabase") {
+    await deleteSupabaseReservation(id);
+  } else if (state.storage === "local") {
     state.reservations = state.reservations.filter((item) => Number(item.id) !== id);
     saveLocalReservations();
   } else {
     await api(`/api/reservations/${id}`, { method: "DELETE" });
   }
   toast("Prenotazione eliminata");
-  if (state.storage === "server") await refreshReservations();
-  else renderAll();
+  await refreshReservations();
   fillFormForTable(reservation.tableNumber);
 }
 
@@ -349,7 +443,7 @@ async function suggestTable() {
     return;
   }
   try {
-    if (state.storage === "local") {
+    if (state.storage === "local" || state.storage === "supabase") {
       const table = findLocalSuggestedTable(people, preference);
       applySuggestedTable(table);
       return;
@@ -421,6 +515,11 @@ function applySuggestedTable(table) {
 }
 
 async function refreshReservations() {
+  if (state.storage === "supabase") {
+    state.reservations = await loadSupabaseReservations();
+    renderAll();
+    return;
+  }
   if (state.storage === "local") {
     state.reservations = loadLocalReservations();
     renderAll();
