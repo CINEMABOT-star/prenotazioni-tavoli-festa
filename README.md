@@ -39,6 +39,20 @@ https://cinemabot-star.github.io/prenotazioni-tavoli-festa/
 
 Su GitHub Pages le prenotazioni vengono salvate nel browser del dispositivo tramite `localStorage`. Restano presenti quando riapri il link dallo stesso browser, ma non sono condivise automaticamente tra dispositivi diversi.
 
+Se vuoi usare GitHub Pages come indirizzo principale ma con dati condivisi:
+
+1. Pubblica il backend Node.js su Render usando il blueprint sotto.
+2. Copia l'URL pubblico di Render.
+3. Inseriscilo in `docs/config.js`:
+
+```js
+window.APP_CONFIG = {
+  apiBaseUrl: "https://URL-DEL-BACKEND.onrender.com"
+};
+```
+
+Quando `apiBaseUrl` e' compilato, PC e telefono leggono e scrivono lo stesso database online.
+
 ### Render con SQLite persistente
 
 Il progetto include `render.yaml` per pubblicare l'app come servizio Node.js su Render con disco persistente.

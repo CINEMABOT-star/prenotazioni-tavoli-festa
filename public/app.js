@@ -10,9 +10,10 @@ const state = {
 };
 
 const $ = (id) => document.getElementById(id);
+const API_BASE = String(window.APP_CONFIG?.apiBaseUrl || "").replace(/\/+$/, "");
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -102,7 +103,8 @@ function renderSummary() {
   const booked = state.reservations.length;
   const total = state.tables.length;
   const people = state.reservations.reduce((sum, reservation) => sum + reservation.people, 0);
-  $("summaryText").textContent = `${booked}/${total} tavoli prenotati - ${people} persone`;
+  const storageText = state.storage === "server" ? "database condiviso" : "salvato solo su questo dispositivo";
+  $("summaryText").textContent = `${booked}/${total} tavoli prenotati - ${people} persone - ${storageText}`;
   $("listCount").textContent = `${booked} prenotazioni`;
 }
 

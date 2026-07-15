@@ -10,6 +10,10 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, "data");
 const DB_FILE = path.join(DATA_DIR, "reservations.sqlite");
 const TABLES_FILE = path.join(ROOT, "tables.json");
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -121,6 +125,18 @@ function findSuggestedTable(people, preference) {
 }
 
 const app = express();
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowOrigin = origin && (ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin));
+  if (allowOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
 app.use(express.json({ limit: "256kb" }));
 app.use(express.static(PUBLIC_DIR, {
   etag: false,
