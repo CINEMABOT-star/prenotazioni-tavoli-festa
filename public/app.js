@@ -166,6 +166,7 @@ function renderTableStates() {
 }
 
 function showPanel() {
+  $("bookingPanel").classList.add("is-open");
   $("emptyPanel").classList.add("hidden");
   $("bookingForm").classList.remove("hidden");
 }
@@ -176,6 +177,7 @@ function hidePanel() {
   $("bookingForm").reset();
   $("bookingForm").classList.add("hidden");
   $("emptyPanel").classList.remove("hidden");
+  $("bookingPanel").classList.remove("is-open");
   setWarning("");
   renderTableStates();
 }
